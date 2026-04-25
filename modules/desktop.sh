@@ -21,6 +21,13 @@ install_mate_desktop() {
     apt_install "pluma"
     apt_install "engrampa"
     apt_install "caja"
+    
+    # Caja Extensions
+    log_info "Installing Caja extensions..."
+    apt_install "caja-open-terminal"
+    apt_install "caja-wallpaper"
+    apt_install "caja-image-converter"
+    apt_install "caja-admin"
 }
 
 # Apply some basic configurations.
