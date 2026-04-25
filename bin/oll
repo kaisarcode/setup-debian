@@ -12,6 +12,8 @@ NAME="ollama"
 PORT="11434"
 VOL_NAME="ollama_data"
 
+# Print command usage.
+# @return 0 on success.
 oll_help() {
     echo "Usage: oll <command>"
     echo
@@ -26,19 +28,23 @@ oll_help() {
     echo
 }
 
+# Pull the Ollama container image.
+# @return 0 on success.
 oll_install() {
     echo "[INFO] Preparing Ollama installation..."
     sudo podman pull "$IMAGE"
     echo "[OK] Ollama is ready to start."
 }
 
+# Start the Ollama container.
+# @return 0 on success.
 oll_start() {
     echo "[INFO] Starting Ollama..."
     sudo podman rm -f "$NAME" >/dev/null 2>&1 || true
 
-    local gpu_flags=""
+    local gpu_flags=()
     if command -v nvidia-ctk >/dev/null 2>&1 && sudo nvidia-ctk cdi list 2>/dev/null | grep -q "nvidia.com/gpu=all"; then
-        gpu_flags="--device nvidia.com/gpu=all --security-opt label=disable"
+        gpu_flags=(--device "nvidia.com/gpu=all" --security-opt "label=disable")
         echo "[INFO] GPU support detected and enabled."
     else
         echo "[WARN] GPU support not detected. Running on CPU."
@@ -48,34 +54,47 @@ oll_start() {
         --name "$NAME" \
         -p "${PORT}:11434" \
         -v "${VOL_NAME}:/root/.ollama" \
-        $gpu_flags \
+        "${gpu_flags[@]}" \
         "$IMAGE"
 
     echo "[OK] Ollama is running at http://localhost:${PORT}"
 }
 
+# Stop and remove the Ollama container.
+# @return 0 on success.
 oll_stop() {
     sudo podman rm -f "$NAME" >/dev/null 2>&1 || true
 }
 
+# Follow Ollama container logs.
+# @return 0 on success.
 oll_logs() {
     sudo podman logs -f "$NAME"
 }
 
+# Show Ollama container status.
+# @return 0 on success.
 oll_status() {
     sudo podman ps -a --filter "name=${NAME}"
 }
 
+# Remove the Ollama container and persistent volume.
+# @return 0 on success.
 oll_remove() {
     oll_stop
     sudo podman volume rm "$VOL_NAME" >/dev/null 2>&1 || true
 }
 
+# Remove the Ollama container, persistent volume, and image.
+# @return 0 on success.
 oll_nuke() {
     oll_remove
     sudo podman rmi "$IMAGE" >/dev/null 2>&1 || true
 }
 
+# Run the Ollama command dispatcher.
+# @param $@ Command arguments.
+# @return 0 on success.
 oll_main() {
     case "${1:-}" in
         install) oll_install ;;

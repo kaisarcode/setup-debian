@@ -8,6 +8,7 @@
 set -euo pipefail
 
 # Install Flatpak support and Flathub repository.
+# @return 0 on success.
 install_flatpak_base() {
     log_info "Installing Flatpak support..."
     apt_install "flatpak"
@@ -16,6 +17,7 @@ install_flatpak_base() {
 }
 
 # Run the flatpak provisioning.
+# @return 0 on success.
 main() {
     local PROJECT_ROOT
     PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

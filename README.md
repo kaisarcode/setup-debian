@@ -31,3 +31,15 @@ Standalone utilities for system management:
 - **`owi`**: Starts Open WebUI against a remote Ollama server.
 - **`iso`**: Run an isolated envitonment using podman/distrobox.
 - **`xmouse` / `xres`**: Utilities for switching between normal and tablet-friendly mouse/DPI settings (useful for convertible devices).
+
+---
+
+**Author:** KaisarCode
+
+**Email:** <kaisar@kaisarcode.com>
+
+**Website:** [https://kaisarcode.com](https://kaisarcode.com)
+
+**License:** [GNU GPL v3.0](https://www.gnu.org/licenses/gpl-3.0.html)
+
+© 2026 KaisarCode

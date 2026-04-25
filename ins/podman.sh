@@ -8,6 +8,7 @@
 set -euo pipefail
 
 # Install Podman and its dependencies.
+# @return 0 on success.
 install_podman() {
     log_info "Installing Podman and rootless dependencies..."
     apt_install "podman"
@@ -18,6 +19,7 @@ install_podman() {
 }
 
 # Configure subuids/subgids for the primary user.
+# @return 0 on success.
 configure_rootless() {
     local primary_user
     primary_user=$(id -un 1000 2>/dev/null || awk -F: '$3 == 1000 {print $1}' /etc/passwd)
@@ -34,6 +36,7 @@ configure_rootless() {
 }
 
 # Run the podman provisioning.
+# @return 0 on success.
 main() {
     local PROJECT_ROOT
     PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

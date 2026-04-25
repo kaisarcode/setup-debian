@@ -8,6 +8,7 @@
 set -euo pipefail
 
 # Enable autologin in LightDM for the primary user.
+# @return 0 on success.
 enable_autologin() {
     local primary_user
     primary_user=$(id -un 1000)
@@ -24,6 +25,7 @@ enable_autologin() {
 }
 
 # Run the autologin provisioning.
+# @return 0 on success.
 main() {
     local PROJECT_ROOT
     PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

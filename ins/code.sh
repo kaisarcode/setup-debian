@@ -12,6 +12,7 @@ CODE_BOX_IMAGE="debian:trixie"
 CODE_BOX_HOME="$HOME/.isolated/$CODE_BOX_NAME"
 
 # Install host container dependencies.
+# @return 0 on success.
 install_code_host_dependencies() {
     log_info "Installing host dependencies for isolated code environment..."
     apt_install "podman"
@@ -22,6 +23,7 @@ install_code_host_dependencies() {
 }
 
 # Create isolated Distrobox environment.
+# @return 0 on success.
 create_code_environment() {
     if distrobox list | awk '{print $3}' | grep -qx "$CODE_BOX_NAME"; then
         log_skip "Distrobox environment '$CODE_BOX_NAME' already exists."
@@ -40,6 +42,7 @@ create_code_environment() {
 }
 
 # Install base packages inside the isolated environment.
+# @return 0 on success.
 install_code_base_packages() {
     log_info "Installing base packages inside '$CODE_BOX_NAME'..."
     distrobox enter "$CODE_BOX_NAME" -- sudo apt update
@@ -48,6 +51,7 @@ install_code_base_packages() {
 }
 
 # Install VS Code inside the isolated environment.
+# @return 0 on success.
 install_vscode() {
     log_info "Installing VS Code inside '$CODE_BOX_NAME'..."
 
@@ -71,6 +75,7 @@ sudo apt install -y code
 }
 
 # Install Antigravity inside the isolated environment.
+# @return 0 on success.
 install_antigravity() {
     log_info "Installing Antigravity inside '$CODE_BOX_NAME'..."
 
@@ -95,6 +100,7 @@ sudo apt install -y antigravity
 }
 
 # Export installed applications to the host desktop menu.
+# @return 0 on success.
 export_code_apps() {
     log_info "Exporting VS Code to host menu..."
     distrobox enter "$CODE_BOX_NAME" -- distrobox-export --app code || true
@@ -104,6 +110,7 @@ export_code_apps() {
 }
 
 # Run the isolated code environment provisioning.
+# @return 0 on success.
 main() {
     local PROJECT_ROOT
     PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

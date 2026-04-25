@@ -13,30 +13,35 @@ NC='\033[0m'
 
 # Print an informational message.
 # @param $1 Message text.
+# @return 0 on success.
 log_info() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
 
 # Print a success message.
 # @param $1 Message text.
+# @return 0 on success.
 log_success() {
     echo -e "${GREEN}[OK]${NC} $1"
 }
 
 # Print a warning message.
 # @param $1 Message text.
+# @return 0 on success.
 log_warn() {
     echo -e "${YELLOW}[WARN]${NC} $1"
 }
 
 # Print an error message.
 # @param $1 Message text.
+# @return 0 on success.
 log_error() {
     echo -e "${RED}[ERROR]${NC} $1" >&2
 }
 
 # Print a skip message.
 # @param $1 Message text.
+# @return 0 on success.
 log_skip() {
     echo -e "${YELLOW}[SKIP]${NC} $1"
 }

@@ -11,6 +11,7 @@ ISO_BASE_DIR="${ISO_BASE_DIR:-$HOME/.isolated}"
 ISO_DEFAULT_IMAGE="${ISO_DEFAULT_IMAGE:-debian:trixie}"
 
 # Print usage.
+# @return 0 on success.
 iso_help() {
     echo "Usage: iso <command> [name] [args...]"
     echo
@@ -25,6 +26,8 @@ iso_help() {
 }
 
 # Validate an environment name.
+# @param $1 Environment name.
+# @return 0 on success.
 iso_require_name() {
     local name="${1:-}"
 
@@ -42,6 +45,9 @@ iso_require_name() {
 }
 
 # Create an environment.
+# @param $1 Environment name.
+# @param $2 Optional image name.
+# @return 0 on success.
 iso_create() {
     local name="${1:-}"
     local image="${2:-$ISO_DEFAULT_IMAGE}"
@@ -67,6 +73,8 @@ iso_create() {
 }
 
 # Enter an environment.
+# @param $1 Environment name.
+# @return 0 on success.
 iso_enter() {
     local name="${1:-}"
 
@@ -76,6 +84,8 @@ iso_enter() {
 }
 
 # Run a command inside.
+# @param $@ Environment name followed by command arguments.
+# @return 0 on success.
 iso_run() {
     local name="${1:-}"
 
@@ -92,6 +102,9 @@ iso_run() {
 }
 
 # Export an app to the host.
+# @param $1 Environment name.
+# @param $2 Application name.
+# @return 0 on success.
 iso_export() {
     local name="${1:-}"
     local app="${2:-}"
@@ -110,11 +123,14 @@ iso_export() {
 }
 
 # List environments.
+# @return 0 on success.
 iso_list() {
     distrobox list
 }
 
 # Remove an environment.
+# @param $1 Environment name.
+# @return 0 on success.
 iso_remove() {
     local name="${1:-}"
     local home_dir=""
@@ -145,38 +161,44 @@ iso_remove() {
     echo "[OK] Removed environment '$name'."
 }
 
-# Dispatcher.
-case "${1:-}" in
-    create)
-        shift
-        iso_create "$@"
-        ;;
-    enter)
-        shift
-        iso_enter "$@"
-        ;;
-    run)
-        shift
-        iso_run "$@"
-        ;;
-    export)
-        shift
-        iso_export "$@"
-        ;;
-    list)
-        iso_list
-        ;;
-    remove|destroy)
-        shift
-        iso_remove "$@"
-        ;;
-    -h|--help|help|"")
-        iso_help
-        ;;
-    *)
-        echo "[ERROR] Unknown command: $1" >&2
-        echo >&2
-        iso_help
-        exit 1
-        ;;
-esac
+# Run the command dispatcher.
+# @param $@ Command arguments.
+# @return 0 on success.
+iso_main() {
+    case "${1:-}" in
+        create)
+            shift
+            iso_create "$@"
+            ;;
+        enter)
+            shift
+            iso_enter "$@"
+            ;;
+        run)
+            shift
+            iso_run "$@"
+            ;;
+        export)
+            shift
+            iso_export "$@"
+            ;;
+        list)
+            iso_list
+            ;;
+        remove|destroy)
+            shift
+            iso_remove "$@"
+            ;;
+        -h|--help|help|"")
+            iso_help
+            ;;
+        *)
+            echo "[ERROR] Unknown command: $1" >&2
+            echo >&2
+            iso_help
+            return 1
+            ;;
+    esac
+}
+
+iso_main "$@"

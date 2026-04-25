@@ -8,6 +8,7 @@
 set -euo pipefail
 
 # Enable 32-bit architecture and install Wine.
+# @return 0 on success.
 install_wine() {
     log_info "Enabling i386 architecture..."
     sudo dpkg --add-architecture i386
@@ -23,6 +24,7 @@ install_wine() {
 }
 
 # Install winetricks and common helpers.
+# @return 0 on success.
 install_winetricks() {
     log_info "Installing winetricks and dependencies..."
     apt_install "winetricks"
@@ -34,6 +36,7 @@ install_winetricks() {
 }
 
 # Run the wine provisioning.
+# @return 0 on success.
 main() {
     local PROJECT_ROOT
     PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

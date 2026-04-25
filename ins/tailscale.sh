@@ -8,6 +8,7 @@
 set -euo pipefail
 
 # Install Tailscale.
+# @return 0 on success.
 install_tailscale() {
     if command_exists tailscale; then
         log_skip "Tailscale is already installed."
@@ -19,6 +20,7 @@ install_tailscale() {
 }
 
 # Run the tailscale provisioning.
+# @return 0 on success.
 main() {
     local PROJECT_ROOT
     PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -26,7 +28,7 @@ main() {
 
     log_info "Running Tailscale Provisioning..."
     install_tailscale
-    sudo tailscale set --operator=$USER
+    sudo tailscale set --operator="$USER"
     sudo systemctl enable --now tailscaled
     log_success "Tailscale installation complete. Run 'sudo tailscale up' to authenticate."
 }

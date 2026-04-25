@@ -8,6 +8,7 @@
 set -euo pipefail
 
 # Install Yaru theme packages.
+# @return 0 on success.
 install_yaru() {
     log_info "Installing Yaru theme packages..."
     apt_install "yaru-theme-gtk"
@@ -17,19 +18,20 @@ install_yaru() {
 }
 
 # Apply Yaru-dark theme to MATE.
+# @return 0 on success.
 apply_mate_theme() {
     local primary_user
     primary_user=$(id -un 1000)
     
     log_info "Applying Yaru-dark theme for $primary_user..."
     
-    # We use sudo -u to apply settings to the user's dconf database
     sudo -u "$primary_user" dbus-launch gsettings set org.mate.interface gtk-theme 'Yaru-dark'
     sudo -u "$primary_user" dbus-launch gsettings set org.mate.interface icon-theme 'Yaru-dark'
     sudo -u "$primary_user" dbus-launch gsettings set org.mate.Marco.general theme 'Yaru-dark'
 }
 
 # Run the theme provisioning.
+# @return 0 on success.
 main() {
     local PROJECT_ROOT
     PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

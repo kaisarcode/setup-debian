@@ -8,6 +8,7 @@
 set -euo pipefail
 
 # Install CPU microcode.
+# @return 0 on success.
 install_microcode() {
     if grep -q 'AMD' /proc/cpuinfo; then
         log_info "AMD CPU detected. Installing microcode..."
@@ -19,6 +20,7 @@ install_microcode() {
 }
 
 # Install NVIDIA driver stack if hardware is detected.
+# @return 0 on success.
 install_nvidia() {
     if ! lspci | grep -qi 'nvidia'; then
         return 0
@@ -28,18 +30,15 @@ install_nvidia() {
     apt_install "dkms"
     apt_install "linux-headers-$(uname -r)"
     
-    # Core driver packages for Debian 13
     apt_install "nvidia-driver"
     apt_install "firmware-misc-nonfree"
     apt_install "nvidia-settings"
     apt_install "nvtop"
 
-    # Enable NVIDIA DRM Modeset for hardware capture support (required for Sunshine/NVENC)
     log_info "Enabling NVIDIA DRM modeset..."
     echo "options nvidia-drm modeset=1" | sudo tee /etc/modprobe.d/nvidia-drm.conf
     sudo update-initramfs -u
 
-    # Install NVIDIA Container Toolkit for Podman/Docker GPU support
     log_info "Installing NVIDIA Container Toolkit..."
     curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
     curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
@@ -54,6 +53,7 @@ install_nvidia() {
 }
 
 # Install PipeWire audio stack.
+# @return 0 on success.
 install_audio() {
     if ! lspci | grep -qi 'audio'; then
         return 0
@@ -65,12 +65,12 @@ install_audio() {
     apt_install "wireplumber"
     apt_install "pavucontrol"
 
-    # Enable for all users
     sudo systemctl --global enable pipewire.service 2>/dev/null || true
     sudo systemctl --global enable wireplumber.service 2>/dev/null || true
 }
 
 # Run the drivers provisioning.
+# @return 0 on success.
 main() {
     local PROJECT_ROOT
     PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

@@ -8,6 +8,7 @@
 set -euo pipefail
 
 # Configure system locales.
+# @return 0 on success.
 setup_locales() {
     log_info "Configuring system locales (English system, Spanish AR support)..."
 
@@ -22,6 +23,7 @@ setup_locales() {
 }
 
 # Force XDG user directories to English.
+# @return 0 on success.
 setup_xdg_dirs() {
     local primary_user
     local user_home
@@ -40,6 +42,7 @@ setup_xdg_dirs() {
 }
 
 # Run the locales provisioning.
+# @return 0 on success.
 main() {
     local PROJECT_ROOT
 

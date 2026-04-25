@@ -14,31 +14,43 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 # Print an informational message.
+# @param $1 Message text.
+# @return 0 on success.
 log_info() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
 
 # Print a success message.
+# @param $1 Message text.
+# @return 0 on success.
 log_success() {
     echo -e "${GREEN}[OK]${NC} $1"
 }
 
 # Print a warning message.
+# @param $1 Message text.
+# @return 0 on success.
 log_warn() {
     echo -e "${YELLOW}[WARN]${NC} $1"
 }
 
 # Print an error message.
+# @param $1 Message text.
+# @return 0 on success.
 log_error() {
     echo -e "${RED}[ERROR]${NC} $1" >&2
 }
 
 # Print a skip message.
+# @param $1 Message text.
+# @return 0 on success.
 log_skip() {
     echo -e "${YELLOW}[SKIP]${NC} $1"
 }
 
 # Prompt the user for yes or no confirmation.
+# @param $1 Prompt message.
+# @return 0 when confirmed, 1 otherwise.
 confirm() {
     local message="$1"
     read -p "$message (y/n): " -n 1 -r
@@ -53,6 +65,10 @@ confirm() {
 DEBIAN_VERSION="13"
 
 # Provision one Incus instance.
+# @param $1 Instance name.
+# @param $2 User password.
+# @param $3 Optional source instance name.
+# @return 0 on success.
 provision_instance() {
     local NAME=$1
     local PASSWORD=$2
@@ -118,7 +134,7 @@ EOF"
 
     log_info "Configuring sudo for $PRIMARY_USER..."
     incus exec "$NAME" -- sh -c "echo '$PRIMARY_USER ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/$PRIMARY_USER"
-    incus exec "$NAME" -- chmod 440 /etc/sudoers.d/$PRIMARY_USER
+    incus exec "$NAME" -- chmod 440 /etc/sudoers.d/"$PRIMARY_USER"
     
     log_info "Installing packages (SSH, Avahi/mDNS)..."
     incus exec "$NAME" -- sh -c "apt update -qq && apt install -y -qq avahi-daemon openssh-server"
@@ -132,6 +148,8 @@ EOF"
     log_success "Provisioning complete for $NAME.local"
 }
 
+# Print command usage.
+# @return 0 on success.
 show_help() {
     echo -e "${BLUE}KCS Incus Manager${NC}"
     echo
@@ -154,6 +172,9 @@ show_help() {
     echo
 }
 
+# Create an Incus instance.
+# @param $@ Command arguments.
+# @return 0 on success.
 cmd_create() {
     INSTANCE_NAME=""
     SOURCE_NAME=""
@@ -292,6 +313,11 @@ cmd_create() {
     log_info "===================================================="
 }
 
+# Clone an Incus instance.
+# @param $1 Origin instance name.
+# @param $2 New instance name.
+# @param $@ Additional command arguments.
+# @return 0 on success.
 cmd_clone() {
     local origin="$1"
     local new_name="$2"
@@ -312,6 +338,9 @@ cmd_clone() {
     cmd_create "$new_name" --clone "$origin" "$@"
 }
 
+# List Incus instances or snapshots.
+# @param $1 Optional instance name.
+# @return 0 on success.
 cmd_list() {
     INSTANCE=$1
     if [[ -z "$INSTANCE" ]]; then
@@ -327,6 +356,10 @@ cmd_list() {
     fi
 }
 
+# Restore an Incus instance snapshot.
+# @param $1 Instance name.
+# @param $2 Snapshot name.
+# @return 0 on success.
 cmd_load() {
     INSTANCE=$1
     SNAPSHOT=$2
@@ -343,6 +376,10 @@ cmd_load() {
     log_success "Instance '$INSTANCE' has been restored to state '$SNAPSHOT'."
 }
 
+# Remove an Incus instance or snapshot.
+# @param $1 Instance name.
+# @param $2 Optional snapshot name.
+# @return 0 on success.
 cmd_remove() {
     INSTANCE=$1
     SNAPSHOT=$2
@@ -381,6 +418,10 @@ cmd_remove() {
     fi
 }
 
+# Save an Incus instance snapshot.
+# @param $1 Instance name.
+# @param $2 Snapshot name.
+# @return 0 on success.
 cmd_save() {
     INSTANCE=$1
     SNAPSHOT=$2
@@ -393,6 +434,9 @@ cmd_save() {
     log_success "Snapshot '$SNAPSHOT' created successfully."
 }
 
+# Start an Incus instance.
+# @param $1 Instance name.
+# @return 0 on success.
 cmd_start() {
     INSTANCE=$1
     if [[ -z "$INSTANCE" ]]; then
@@ -405,6 +449,9 @@ cmd_start() {
     log_success "Instance '$INSTANCE' is now running and set to autostart on boot."
 }
 
+# Stop an Incus instance.
+# @param $1 Instance name.
+# @return 0 on success.
 cmd_stop() {
     INSTANCE=$1
     if [[ -z "$INSTANCE" ]]; then
@@ -417,6 +464,10 @@ cmd_stop() {
     log_success "Instance '$INSTANCE' is now stopped and will NOT autostart on boot."
 }
 
+# Export an Incus instance.
+# @param $1 Instance name.
+# @param $2 Optional output filename.
+# @return 0 on success.
 cmd_export() {
     INSTANCE=$1
     FILENAME=$2
@@ -431,6 +482,9 @@ cmd_export() {
     log_success "Instance exported successfully to $FILENAME"
 }
 
+# Import an Incus instance.
+# @param $@ Command arguments.
+# @return 0 on success.
 cmd_import() {
     if [[ $# -eq 1 ]]; then
         FILENAME=$1
@@ -457,6 +511,9 @@ cmd_import() {
     log_success "Instance imported successfully."
 }
 
+# Replace quick snapshots.
+# @param $1 Optional instance name.
+# @return 0 on success.
 cmd_snap() {
     INSTANCE=$1
     if [[ -z "$INSTANCE" ]]; then
@@ -477,6 +534,8 @@ cmd_snap() {
     log_success "Quick snapshot 'snap' recreated successfully."
 }
 
+# Synchronize managed instances.
+# @return 0 on success.
 cmd_sync() {
     log_info "Synchronizing managed instances..."
     local instances
@@ -501,6 +560,10 @@ cmd_sync() {
     log_success "All instances synchronized."
 }
 
+# Enter an Incus instance.
+# @param $1 Instance name.
+# @param $@ Optional command arguments.
+# @return 0 on success.
 cmd_enter() {
     INSTANCE=$1
     shift || true
@@ -520,6 +583,9 @@ cmd_enter() {
     fi
 }
 
+# Run the command dispatcher.
+# @param $@ Command arguments.
+# @return 0 on success.
 main() {
     local subcommand
     if [[ $# -eq 0 ]]; then
