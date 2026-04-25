@@ -26,7 +26,6 @@ apply_mate_theme() {
     sudo -u "$primary_user" dbus-launch gsettings set org.mate.interface gtk-theme 'Yaru-dark'
     sudo -u "$primary_user" dbus-launch gsettings set org.mate.interface icon-theme 'Yaru-dark'
     sudo -u "$primary_user" dbus-launch gsettings set org.mate.Marco.general theme 'Yaru-dark'
-    sudo -u "$primary_user" dbus-launch gsettings set org.mate.notification-daemon theme 'coco'
 }
 
 # Run the theme provisioning.
