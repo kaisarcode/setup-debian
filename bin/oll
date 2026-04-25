@@ -1,0 +1,133 @@
+#!/bin/bash
+# oll - Ollama runner for Podman with GPU support
+# Summary: Starts and manages Ollama in a Podman container.
+# Author:  KaisarCode
+# Website: https://kaisarcode.com
+# License: https://www.gnu.org/licenses/gpl-3.0.html
+
+set -e
+
+# Print command usage.
+oll_help() {
+    echo "Usage: oll <command>"
+    echo
+    echo "Commands:"
+    echo "  install  Install (pull) Ollama image"
+    echo "  start    Start Ollama container with GPU support"
+    echo "  stop     Stop Ollama container"
+    echo "  logs     Follow container logs"
+    echo "  status   Show container status"
+    echo "  uninstall Remove container and persistent models"
+    echo "  remove   Remove container and persistent models"
+    echo "  nuke     Remove container, models, and local image"
+    echo
+}
+
+# Run podman with GPU support if available.
+oll_podman() {
+    local device_arg=""
+    
+    # Check if NVIDIA GPU is available via CDI
+    if [ -f /etc/cdi/nvidia.yaml ] || [ -f /var/run/cdi/nvidia.yaml ]; then
+        device_arg="--device nvidia.com/gpu=all --security-opt label=disable"
+    fi
+
+    sudo podman "$@" $device_arg
+}
+
+# Install Ollama (pull image and create volumes).
+oll_install() {
+    local image="ollama/ollama:latest"
+    echo "[INFO] Preparing Ollama installation..."
+    sudo podman pull "$image"
+    echo "[OK] Ollama is ready to start."
+}
+
+# Start Ollama.
+oll_start() {
+    local name="ollama"
+    local image="ollama/ollama:latest"
+    local port="11434"
+    local vol_name="ollama_data"
+
+    echo "[INFO] Starting Ollama..."
+    sudo podman rm -f "$name" >/dev/null 2>&1 || true
+    
+    # Use CDI for GPU access if configured
+    local gpu_flags=""
+    if sudo nvidia-ctk cdi list | grep -q "nvidia.com/gpu=all"; then
+        gpu_flags="--device nvidia.com/gpu=all --security-opt label=disable"
+        echo "[INFO] GPU support detected and enabled."
+    else
+        echo "[WARN] GPU support not detected. Running on CPU."
+    fi
+
+    sudo podman run -d \
+        --name "$name" \
+        -p "${port}:11434" \
+        -v "${vol_name}:/root/.ollama" \
+        $gpu_flags \
+        "$image"
+    
+    echo "[OK] Ollama is running at http://localhost:11434"
+}
+
+# Stop Ollama.
+oll_stop() {
+    sudo podman rm -f ollama >/dev/null 2>&1 || true
+}
+
+# Follow logs.
+oll_logs() {
+    sudo podman logs -f ollama
+}
+
+# Show status.
+oll_status() {
+    sudo podman ps -a --filter "name=ollama"
+}
+
+# Remove data.
+oll_remove() {
+    oll_stop
+    sudo podman volume rm ollama_data >/dev/null 2>&1 || true
+}
+
+# Nuke everything.
+oll_nuke() {
+    oll_remove
+    sudo podman rmi ollama/ollama:latest >/dev/null 2>&1 || true
+}
+
+# Main command dispatcher.
+oll_main() {
+    case "${1:-}" in
+        install)
+            oll_install
+            ;;
+        start)
+            oll_start
+            ;;
+        stop)
+            oll_stop
+            ;;
+        logs)
+            oll_logs
+            ;;
+        status)
+            oll_status
+            ;;
+        uninstall|remove)
+            oll_remove
+            ;;
+        nuke)
+            oll_nuke
+            ;;
+        *)
+            oll_help >&2
+            return 1
+            ;;
+    esac
+}
+
+oll_main "$@"
