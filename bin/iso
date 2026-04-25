@@ -20,7 +20,7 @@ iso_help() {
     echo "  run <name> <cmd>       Run a command inside the environment"
     echo "  export <name> <app>    Export an app to the host desktop menu"
     echo "  list                   List isolated environments"
-    echo "  destroy <name>         Remove the environment and its home"
+    echo "  remove <name>          Remove the environment and its home"
     echo
 }
 
@@ -81,8 +81,8 @@ iso_list() {
     distrobox list
 }
 
-# Destroy an environment.
-iso_destroy() {
+# Remove an environment.
+iso_remove() {
     local name="${1:-}"
     local home_dir="$ISO_BASE_DIR/$name"
 
@@ -91,7 +91,7 @@ iso_destroy() {
         return 1
     fi
 
-    echo "[WARN] Destroying environment '$name' and its home..."
+    echo "[WARN] Removing environment '$name' and its home..."
     distrobox rm "$name" --force
     if [ -d "$home_dir" ]; then
         rm -rf "$home_dir"
@@ -101,11 +101,11 @@ iso_destroy() {
 
 # Dispatcher.
 case "${1:-}" in
-    create)  shift; iso_create "$@" ;;
-    enter)   shift; iso_enter "$@" ;;
-    run)     shift; iso_run "$@" ;;
-    export)  shift; iso_export "$@" ;;
-    list)    iso_list ;;
-    destroy) shift; iso_destroy "$@" ;;
-    *)       iso_help ;;
+    create)         shift; iso_create "$@" ;;
+    enter)          shift; iso_enter "$@" ;;
+    run)            shift; iso_run "$@" ;;
+    export)         shift; iso_export "$@" ;;
+    list)           iso_list ;;
+    remove|destroy) shift; iso_remove "$@" ;;
+    *)              iso_help ;;
 esac
