@@ -27,6 +27,7 @@ main() {
     log_info "Running Tailscale Provisioning..."
     install_tailscale
     sudo tailscale set --operator=$USER
+    sudo systemctl enable --now tailscaled
     log_success "Tailscale installation complete. Run 'sudo tailscale up' to authenticate."
 }
 
