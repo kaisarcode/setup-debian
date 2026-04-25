@@ -34,6 +34,7 @@ Profiles are incremental. You can execute them directly from the `profiles/` dir
 - **`./profiles/base.sh`**: Configures repositories and drivers (NVIDIA, Microcode, Audio). The system is left ready but without a graphical environment.
 - **`./profiles/desktop.sh`**: Installs the base profile + MATE Desktop + Podman.
 - **`./profiles/server.sh`**: Installs the base profile + Incus + Podman.
+- **`./profiles/workstation.sh`**: Installs the desktop profile + Sunshine (optimized for RTX hosts).
 
 ## Helper Tools (`bin/`)
 
