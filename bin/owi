@@ -19,7 +19,6 @@ owi_help() {
     echo "  logs     Follow container logs"
     echo "  status   Show container status"
     echo "  url      Print local URL"
-    echo "  uninstall Remove container and persistent data"
     echo "  remove   Remove container and persistent data"
     echo "  nuke     Remove container, persistent data, and local image"
     echo
@@ -190,7 +189,7 @@ owi_main() {
         url)
             owi_url
             ;;
-        uninstall|remove|reset)
+        remove|reset)
             owi_remove
             ;;
         nuke)

@@ -17,7 +17,6 @@ oll_help() {
     echo "  stop     Stop Ollama container"
     echo "  logs     Follow container logs"
     echo "  status   Show container status"
-    echo "  uninstall Remove container and persistent models"
     echo "  remove   Remove container and persistent models"
     echo "  nuke     Remove container, models, and local image"
     echo
@@ -117,7 +116,7 @@ oll_main() {
         status)
             oll_status
             ;;
-        uninstall|remove)
+        remove)
             oll_remove
             ;;
         nuke)
