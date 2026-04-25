@@ -25,6 +25,7 @@ main() {
     source "$PROJECT_ROOT/modules/podman.sh"
     source "$PROJECT_ROOT/modules/apps.sh"
     source "$PROJECT_ROOT/modules/theme.sh"
+    source "$PROJECT_ROOT/modules/wine.sh"
 
     log_success "DESKTOP profile installation complete."
 }
