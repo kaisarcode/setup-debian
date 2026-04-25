@@ -119,7 +119,7 @@ main() {
     configure_permissions
     configure_sunshine
     setup_service
-    # enable_autologin # Optional: Uncomment if you want autologin by default
+    enable_autologin
     log_success "Sunshine is ready."
 }
 
