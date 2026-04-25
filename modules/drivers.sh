@@ -33,6 +33,11 @@ install_nvidia() {
     apt_install "firmware-misc-nonfree"
     apt_install "nvidia-settings"
     apt_install "nvtop"
+
+    # Enable NVIDIA DRM Modeset for hardware capture support (required for Sunshine/NVENC)
+    log_info "Enabling NVIDIA DRM modeset..."
+    echo "options nvidia-drm modeset=1" | sudo tee /etc/modprobe.d/nvidia-drm.conf
+    sudo update-initramfs -u
 }
 
 # Install PipeWire audio stack.

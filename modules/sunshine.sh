@@ -76,12 +76,12 @@ setup_service() {
     sudo -u "$primary_user" bash -c "cat <<EOF > $user_home/.config/systemd/user/sunshine.service
 [Unit]
 Description=Sunshine Game Stream Host
-After=network.target
+After=graphical-session.target
 
 [Service]
 Type=simple
+ExecStartPre=/bin/sleep 5
 Environment=DISPLAY=:0
-Environment=XAUTHORITY=$user_home/.Xauthority
 ExecStart=/usr/bin/sunshine
 Restart=always
 RestartSec=5
