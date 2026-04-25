@@ -18,6 +18,7 @@ iso_help() {
     echo "  create <name> [image]  Create an isolated environment"
     echo "  enter <name>           Enter the environment terminal"
     echo "  run <name> <cmd>       Run a command inside the environment"
+    echo "  export <name> <app>    Export an app to the host desktop menu"
     echo "  list                   List isolated environments"
     echo "  destroy <name>         Remove the environment and its home"
     echo
@@ -63,6 +64,18 @@ iso_run() {
     distrobox enter "$name" -- "$@"
 }
 
+# Export an app to the host.
+iso_export() {
+    local name="${1:-}"
+    local app="${2:-}"
+    if [ -z "$name" ] || [ -z "$app" ]; then
+        echo "[ERROR] Name and App are required."
+        return 1
+    fi
+    echo "[INFO] Exporting '$app' from '$name' to host menu..."
+    distrobox enter "$name" -- distrobox-export --app "$app"
+}
+
 # List environments.
 iso_list() {
     distrobox list
@@ -91,6 +104,7 @@ case "${1:-}" in
     create)  shift; iso_create "$@" ;;
     enter)   shift; iso_enter "$@" ;;
     run)     shift; iso_run "$@" ;;
+    export)  shift; iso_export "$@" ;;
     list)    iso_list ;;
     destroy) shift; iso_destroy "$@" ;;
     *)       iso_help ;;
