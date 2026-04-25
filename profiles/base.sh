@@ -21,6 +21,7 @@ main() {
     source "$PROJECT_ROOT/modules/core.sh"
     source "$PROJECT_ROOT/modules/drivers.sh"
     source "$PROJECT_ROOT/modules/tailscale.sh"
+    source "$PROJECT_ROOT/modules/locales.sh"
 
     log_success "BASE profile installation complete."
 }
