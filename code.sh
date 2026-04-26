@@ -11,6 +11,10 @@ CODE_BOX_NAME="code"
 CODE_BOX_IMAGE="debian:trixie"
 CODE_BOX_HOME="$HOME/.isolated/$CODE_BOX_NAME"
 
+NDK_VERSION="27.2.12479018"
+NDK_RELEASE="r27c"
+NDK_ZIP="android-ndk-${NDK_RELEASE}-linux.zip"
+
 # Install host container dependencies.
 # @return 0 on success.
 install_code_host_dependencies() {
@@ -54,7 +58,7 @@ install_code_base_packages() {
 # @return 0 on success.
 configure_code_env() {
     log_info "Configuring environment variables inside '$CODE_BOX_NAME'..."
-    distrobox enter "$CODE_BOX_NAME" -- bash -c '
+    distrobox enter "$CODE_BOX_NAME" -- env NDK_VERSION="$NDK_VERSION" bash -c '
 set -euo pipefail
 
 PROFILE="$HOME/.profile"
@@ -64,12 +68,12 @@ if grep -qF "$MARKER" "$PROFILE" 2>/dev/null; then
     exit 0
 fi
 
-cat >> "$PROFILE" << '"'"'EOF'"'"'
+cat >> "$PROFILE" << EOF
 
 # kc-crosstools
-export ANDROID_HOME="${ANDROID_HOME:-${XDG_DATA_HOME:-$HOME/.local/share}/android-sdk}"
-export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/27.2.12479018"
-export PATH="$ANDROID_HOME/ndk/27.2.12479018:$PATH"
+export ANDROID_HOME="\${ANDROID_HOME:-\${XDG_DATA_HOME:-\$HOME/.local/share}/android-sdk}"
+export ANDROID_NDK_HOME="\$ANDROID_HOME/ndk/$NDK_VERSION"
+export PATH="\$ANDROID_HOME/ndk/$NDK_VERSION:\$PATH"
 EOF
 '
 }
@@ -84,11 +88,11 @@ install_code_cross_tools() {
         gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 \
         gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
 
-    distrobox enter "$CODE_BOX_NAME" -- bash -c '
+    distrobox enter "$CODE_BOX_NAME" -- env NDK_VERSION="$NDK_VERSION" NDK_RELEASE="$NDK_RELEASE" NDK_ZIP="$NDK_ZIP" bash -c '
 set -euo pipefail
 
 ANDROID_HOME="${ANDROID_HOME:-${XDG_DATA_HOME:-$HOME/.local/share}/android-sdk}"
-NDK_DIR="$ANDROID_HOME/ndk/27.2.12479018"
+NDK_DIR="$ANDROID_HOME/ndk/$NDK_VERSION"
 
 if [ -d "$NDK_DIR" ]; then
     exit 0
@@ -96,10 +100,10 @@ fi
 
 mkdir -p "$ANDROID_HOME/ndk"
 TMP=$(mktemp -d)
-curl -fL "https://dl.google.com/android/repository/android-ndk-r27c-linux.zip" -o "$TMP/ndk.zip"
+curl -fL "https://dl.google.com/android/repository/$NDK_ZIP" -o "$TMP/ndk.zip"
 unzip -q "$TMP/ndk.zip" -d "$TMP"
-mv "$TMP/android-ndk-r27c" "$NDK_DIR"
-ln -sf "27.2.12479018" "$ANDROID_HOME/ndk/27"
+mv "$TMP/android-ndk-$NDK_RELEASE" "$NDK_DIR"
+ln -sf "$NDK_VERSION" "$ANDROID_HOME/ndk/${NDK_VERSION%%.*}"
 rm -rf "$TMP"
 '
 }
