@@ -22,17 +22,16 @@ install_tailscale() {
 # Create the SSH config file required by the Tailscale VSCode extension inside the code container.
 # @return 0 on success.
 setup_ssh_config() {
-    local ssh_dir="$HOME/.isolated/code/.ssh"
-    local ssh_config="$ssh_dir/config"
+    local ssh_config="$HOME/.ssh/config"
 
     if [[ -f "$ssh_config" ]]; then
         log_skip "SSH config already exists."
         return 0
     fi
 
-    log_info "Creating SSH config for code container..."
-    mkdir -p "$ssh_dir"
-    chmod 700 "$ssh_dir"
+    log_info "Creating SSH config..."
+    mkdir -p "$HOME/.ssh"
+    chmod 700 "$HOME/.ssh"
     touch "$ssh_config"
     chmod 600 "$ssh_config"
     log_success "SSH config created."

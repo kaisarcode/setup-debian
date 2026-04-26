@@ -38,8 +38,8 @@ create_code_environment() {
     mkdir -p "$CODE_BOX_HOME"
 
     log_info "Linking .ssh and .gitconfig from host..."
-    ln -sf "$HOME/.ssh" "$CODE_BOX_HOME/.ssh"
-    ln -sf "$HOME/.gitconfig" "$CODE_BOX_HOME/.gitconfig"
+    [ -e "$CODE_BOX_HOME/.ssh" ] || ln -s "$HOME/.ssh" "$CODE_BOX_HOME/.ssh"
+    [ -e "$CODE_BOX_HOME/.gitconfig" ] || ln -s "$HOME/.gitconfig" "$CODE_BOX_HOME/.gitconfig"
 
     log_info "Creating Distrobox environment '$CODE_BOX_NAME'..."
     distrobox create \
