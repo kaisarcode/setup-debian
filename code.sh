@@ -50,6 +50,40 @@ install_code_base_packages() {
     distrobox enter "$CODE_BOX_NAME" -- sudo apt install -y gnome-keyring libsecret-1-0 dbus-user-session
 }
 
+# Install cross-compilation toolchains inside the isolated environment.
+# @return 0 on success.
+install_code_cross_tools() {
+    log_info "Installing cross-compilation toolchains inside '$CODE_BOX_NAME'..."
+
+    distrobox enter "$CODE_BOX_NAME" -- sudo apt install -y \
+        gcc g++ cmake make ninja-build patchelf unzip \
+        gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 \
+        gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+
+    distrobox enter "$CODE_BOX_NAME" -- bash -c '
+set -euo pipefail
+
+NDK_ROOT="${KC_NDK_ROOT:-}"
+if [ -z "$NDK_ROOT" ] && [ -n "${KC_TOOLCHAINS:-}" ]; then
+    NDK_ROOT="$KC_TOOLCHAINS/ndk/android-ndk-r27c"
+fi
+if [ -z "$NDK_ROOT" ]; then
+    NDK_ROOT="$HOME/.local/share/kaisarcode/toolchains/ndk/android-ndk-r27c"
+fi
+
+if [ -d "$NDK_ROOT" ]; then
+    exit 0
+fi
+
+mkdir -p "$(dirname "$NDK_ROOT")"
+TMP=$(mktemp -d)
+curl -fL "https://dl.google.com/android/repository/android-ndk-r27c-linux.zip" -o "$TMP/ndk.zip"
+unzip -q "$TMP/ndk.zip" -d "$TMP"
+mv "$TMP/android-ndk-r27c" "$NDK_ROOT"
+rm -rf "$TMP"
+'
+}
+
 # Install VS Code inside the isolated environment.
 # @return 0 on success.
 install_vscode() {
@@ -120,6 +154,7 @@ main() {
     install_code_host_dependencies
     create_code_environment
     install_code_base_packages
+    install_code_cross_tools
     install_vscode
     install_antigravity
     export_code_apps
