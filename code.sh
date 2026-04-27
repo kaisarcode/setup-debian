@@ -91,8 +91,22 @@ install_code_cross_tools() {
 
     distrobox enter "$CODE_BOX_NAME" -- sudo apt install -y \
         gcc g++ cmake make ninja-build patchelf unzip \
+        \
         gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 \
-        gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+        gcc-mingw-w64-i686 g++-mingw-w64-i686 \
+        \
+        gcc-aarch64-linux-gnu g++-aarch64-linux-gnu \
+        gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf \
+        gcc-arm-linux-gnueabi g++-arm-linux-gnueabi \
+        \
+        gcc-i686-linux-gnu g++-i686-linux-gnu \
+        gcc-riscv64-linux-gnu g++-riscv64-linux-gnu \
+        gcc-powerpc64le-linux-gnu g++-powerpc64le-linux-gnu \
+        gcc-mips-linux-gnu g++-mips-linux-gnu \
+        gcc-mipsel-linux-gnu g++-mipsel-linux-gnu \
+        gcc-mips64el-linux-gnuabi64 g++-mips64el-linux-gnuabi64 \
+        gcc-s390x-linux-gnu g++-s390x-linux-gnu \
+        gcc-loongarch64-linux-gnu g++-loongarch64-linux-gnu
 
     distrobox enter "$CODE_BOX_NAME" -- env NDK_VERSION="$NDK_VERSION" NDK_RELEASE="$NDK_RELEASE" NDK_ZIP="$NDK_ZIP" bash -c '
 set -euo pipefail
