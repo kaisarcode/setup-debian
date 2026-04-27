@@ -60,6 +60,7 @@ enable_core_services() {
     sudo systemctl enable --now ssh avahi-daemon 2>/dev/null || true
 }
 
+
 # Run the core provisioning.
 # @return 0 on success.
 main() {
