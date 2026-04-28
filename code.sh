@@ -57,7 +57,7 @@ install_code_base_packages() {
     distrobox enter "$CODE_BOX_NAME" -- sudo apt update
     distrobox enter "$CODE_BOX_NAME" -- sudo apt install -y curl wget git git-lfs gpg apt-transport-https ca-certificates micro
     distrobox enter "$CODE_BOX_NAME" -- sudo apt install -y gnome-keyring libsecret-1-0 dbus-user-session
-    distrobox enter "$CODE_BOX_NAME" -- sudo apt install -y gh
+    distrobox enter "$CODE_BOX_NAME" -- sudo apt install -y gh shellcheck
 }
 
 # Configure environment variables for cross-compilation tools.
